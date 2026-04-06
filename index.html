@@ -91,18 +91,19 @@
 </div>
 
 <div class="section" id="tab-mixed">
-  <div class="note amber">12 in-person slots Tuesday &nbsp;·&nbsp; 12 Padlet slots (video, slides, or written post — your choice) &nbsp;·&nbsp; Due by Thu 4/30</div>
+  <div class="note amber">24 in-person slots Tuesday &nbsp;·&nbsp; 24 Padlet slots (video, slides, or written post — your choice) &nbsp;·&nbsp; Due by Thu 4/30</div>
   <div class="count-row">
     <div class="count-card"><div class="count-num" id="mx-tue-count">—</div><div class="count-lbl">In person</div></div>
     <div class="count-card"><div class="count-num" id="mx-pad-count">—</div><div class="count-lbl">Padlet</div></div>
     <div class="count-card"><div class="count-num" id="mx-open-count">—</div><div class="count-lbl">Slots remaining</div></div>
   </div>
-  <div class="section-label">Tuesday 4/28 — In Person (12 slots)</div>
+  <div class="section-label">Tuesday 4/28 — In Person (24 slots)</div>
   <div class="day-col">
     <div class="day-header bg-teal">Tuesday, April 28 &nbsp;·&nbsp; In Person</div>
     <div class="slots" id="mx-tue-slots"></div>
   </div>
-  <div class="section-label">Padlet — Due by Thursday 4/30 (12 slots)</div>
+  <!-- CHANGED: label updated to 24 slots -->
+  <div class="section-label">Padlet — Due by Thursday 4/30 (24 slots)</div>
   <div class="day-col">
     <div class="day-header bg-amber">Padlet &nbsp;·&nbsp; Video / Slides / Written Post</div>
     <div class="slots" id="mx-pad-slots"></div>
@@ -117,7 +118,8 @@ const STORAGE_KEY = 'enc1101_script_url';
 let SCRIPT_URL = localStorage.getItem(STORAGE_KEY) || '';
 let cache = {
   inperson: { tue: Array(12).fill(''), thu: Array(12).fill('') },
-  mixed:    { tue: Array(12).fill(''), pad: Array(12).fill('') }
+  // CHANGED: both tue and pad now 24 slots
+  mixed:    { tue: Array(24).fill(''), pad: Array(24).fill('') }
 };
 
 if (SCRIPT_URL) {
@@ -260,7 +262,8 @@ function updateCounts() {
   const mxPad = cache.mixed.pad.filter(Boolean).length;
   document.getElementById('mx-tue-count').textContent = mxTue;
   document.getElementById('mx-pad-count').textContent = mxPad;
-  document.getElementById('mx-open-count').textContent = 24 - mxTue - mxPad;
+  // CHANGED: total is now 24 + 24 = 48
+  document.getElementById('mx-open-count').textContent = 48 - mxTue - mxPad;
 }
 
 if (SCRIPT_URL) { loadAll(); setInterval(loadAll, 30000); }
