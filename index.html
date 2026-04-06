@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Presentation Sign-Up — ENC 1101</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #F0F4FA; color: #1B2A4A; min-height: 100vh; padding: 1.5rem; }
+  h1 { font-size: 1.6rem; font-weight: 900; color: #1B2A4A; letter-spacing: 1px; }
+  .subtitle { font-size: 0.85rem; color: #8BA0BF; margin-top: 4px; margin-bottom: 1.25rem; }
+  .setup-banner { background: #FFF3CD; border: 1px solid #BA7517; border-radius: 10px; padding: .75rem 1rem; font-size: 13px; color: #633806; margin-bottom: 1.25rem; display: none; }
+  .setup-banner.visible { display: block; }
+  .setup-banner input { display: block; width: 100%; margin-top: .5rem; padding: .4rem .7rem; border-radius: 7px; border: 1px solid #BA7517; font-size: 13px; font-family: inherit; color: #1B2A4A; background: #fff; }
+  .setup-banner button { margin-top: .5rem; padding: .4rem 1rem; border-radius: 7px; border: none; background: #1B2A4A; color: #F5C842; font-size: 13px; font-weight: 700; cursor: pointer; }
+  .tabs { display: flex; gap: 8px; margin-bottom: 1.25rem; flex-wrap: wrap; }
+  .tab { padding: 8px 22px; border-radius: 8px; border: 1.5px solid #D3D1C7; background: #fff; color: #5F5E5A; font-size: 14px; font-weight: 600; cursor: pointer; transition: all .15s; }
+  .tab.active { background: #1B2A4A; color: #F5C842; border-color: #1B2A4A; }
+  .section { display: none; }
+  .section.active { display: block; }
+  .note { font-size: 13px; color: #444441; margin-bottom: 1rem; padding: .7rem 1rem; background: #fff; border-radius: 8px; border-left: 4px solid #8BA0BF; line-height: 1.6; }
+  .note.teal { border-left-color: #1D9E75; }
+  .note.amber { border-left-color: #BA7517; }
+  .count-row { display: flex; gap: 10px; margin-bottom: 1.25rem; flex-wrap: wrap; }
+  .count-card { background: #fff; border-radius: 10px; padding: .6rem 1rem; min-width: 90px; text-align: center; border: 1px solid #D3D1C7; }
+  .count-num { font-size: 1.6rem; font-weight: 700; color: #1B2A4A; line-height: 1.2; }
+  .count-lbl { font-size: 11px; color: #888780; }
+  .day-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 1rem; }
+  @media(max-width: 580px) { .day-grid { grid-template-columns: 1fr; } }
+  .day-col { background: #fff; border-radius: 12px; border: 1px solid #D3D1C7; overflow: hidden; margin-bottom: 14px; }
+  .day-header { padding: .7rem 1rem; font-size: 13px; font-weight: 700; color: #fff; }
+  .bg-navy { background: #1B2A4A; }
+  .bg-purple { background: #534AB7; }
+  .bg-teal { background: #1D9E75; }
+  .bg-amber { background: #BA7517; }
+  .slots { padding: .5rem; }
+  .slot { display: flex; align-items: center; gap: 8px; padding: .45rem .6rem; border-radius: 7px; margin-bottom: 4px; border: 1px solid #D3D1C7; background: #F0F4FA; }
+  .slot.taken { background: #fff; border-color: #B4B2A9; }
+  .slot.saving { opacity: .6; pointer-events: none; }
+  .slot-num { font-size: 11px; font-weight: 600; color: #888780; min-width: 20px; }
+  .slot-name { flex: 1; font-size: 13px; color: #1B2A4A; }
+  .slot-name.empty { color: #B4B2A9; font-style: italic; }
+  .slot-edit { flex: 1; border: none; background: transparent; font-size: 13px; color: #1B2A4A; outline: none; font-family: inherit; display: none; }
+  .badge { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 999px; cursor: pointer; white-space: nowrap; border: none; font-family: inherit; }
+  .badge-open { background: #E1F5EE; color: #085041; }
+  .badge-taken { background: #F1EFE8; color: #5F5E5A; }
+  .badge-save { background: #1D9E75; color: #fff; }
+  .section-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: #888780; margin-bottom: .5rem; }
+  .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: .5rem; }
+  .clear-btn { font-size: 12px; color: #888780; background: transparent; border: 1px solid #D3D1C7; border-radius: 7px; padding: 5px 14px; cursor: pointer; }
+  .clear-btn:hover { background: #e8e8e8; }
+  .status { font-size: 12px; color: #888780; text-align: center; margin-top: .75rem; height: 18px; }
+  .spinner { display: inline-block; width: 12px; height: 12px; border: 2px solid #D3D1C7; border-top-color: #1B2A4A; border-radius: 50%; animation: spin .7s linear infinite; vertical-align: middle; margin-right: 4px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<h1>Presentation Sign-Up</h1>
+<div class="subtitle">ENC 1101 &nbsp;·&nbsp; April 28 &amp; 30 &nbsp;·&nbsp; Click an open slot to add your name</div>
+
+<div class="setup-banner visible" id="setup-banner">
+  <strong>Instructor setup:</strong> Paste your Google Apps Script Web App URL below and click Connect. Only needs to be done once per device.
+  <input type="text" id="script-url-input" placeholder="https://script.google.com/macros/s/YOUR_ID/exec" />
+  <button onclick="saveScriptUrl()">Connect</button>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('inperson')">In-Person Section</button>
+  <button class="tab" onclick="switchTab('mixed')">Mixed Mode Section</button>
+</div>
+
+<div class="section active" id="tab-inperson">
+  <div class="note teal">12 slots per day &nbsp;·&nbsp; Pick one day &nbsp;·&nbsp; Click a slot to sign up</div>
+  <div class="count-row">
+    <div class="count-card"><div class="count-num" id="ip-tue-count">—</div><div class="count-lbl">Tue signed up</div></div>
+    <div class="count-card"><div class="count-num" id="ip-thu-count">—</div><div class="count-lbl">Thu signed up</div></div>
+    <div class="count-card"><div class="count-num" id="ip-open-count">—</div><div class="count-lbl">Slots remaining</div></div>
+  </div>
+  <div class="day-grid">
+    <div class="day-col">
+      <div class="day-header bg-navy">Tuesday, April 28 &nbsp;·&nbsp; In Person</div>
+      <div class="slots" id="ip-tue-slots"></div>
+    </div>
+    <div class="day-col">
+      <div class="day-header bg-purple">Thursday, April 30 &nbsp;·&nbsp; In Person</div>
+      <div class="slots" id="ip-thu-slots"></div>
+    </div>
+  </div>
+  <div class="actions"><button class="clear-btn" onclick="clearSection('inperson')">Clear all</button></div>
+</div>
+
+<div class="section" id="tab-mixed">
+  <div class="note amber">12 in-person slots Tuesday &nbsp;·&nbsp; 12 Padlet slots (video, slides, or written post — your choice) &nbsp;·&nbsp; Due by Thu 4/30</div>
+  <div class="count-row">
+    <div class="count-card"><div class="count-num" id="mx-tue-count">—</div><div class="count-lbl">In person</div></div>
+    <div class="count-card"><div class="count-num" id="mx-pad-count">—</div><div class="count-lbl">Padlet</div></div>
+    <div class="count-card"><div class="count-num" id="mx-open-count">—</div><div class="count-lbl">Slots remaining</div></div>
+  </div>
+  <div class="section-label">Tuesday 4/28 — In Person (12 slots)</div>
+  <div class="day-col">
+    <div class="day-header bg-teal">Tuesday, April 28 &nbsp;·&nbsp; In Person</div>
+    <div class="slots" id="mx-tue-slots"></div>
+  </div>
+  <div class="section-label">Padlet — Due by Thursday 4/30 (12 slots)</div>
+  <div class="day-col">
+    <div class="day-header bg-amber">Padlet &nbsp;·&nbsp; Video / Slides / Written Post</div>
+    <div class="slots" id="mx-pad-slots"></div>
+  </div>
+  <div class="actions"><button class="clear-btn" onclick="clearSection('mixed')">Clear all</button></div>
+</div>
+
+<div class="status" id="status"></div>
+
+<script>
+const STORAGE_KEY = 'enc1101_script_url';
+let SCRIPT_URL = localStorage.getItem(STORAGE_KEY) || '';
+let cache = {
+  inperson: { tue: Array(12).fill(''), thu: Array(12).fill('') },
+  mixed:    { tue: Array(12).fill(''), pad: Array(12).fill('') }
+};
+
+if (SCRIPT_URL) {
+  document.getElementById('setup-banner').classList.remove('visible');
+  document.getElementById('script-url-input').value = SCRIPT_URL;
+}
+
+function saveScriptUrl() {
+  const val = document.getElementById('script-url-input').value.trim();
+  if (!val.startsWith('https://script.google.com')) { alert('That doesn\'t look like a valid Apps Script URL.'); return; }
+  SCRIPT_URL = val;
+  localStorage.setItem(STORAGE_KEY, val);
+  document.getElementById('setup-banner').classList.remove('visible');
+  loadAll();
+}
+
+function switchTab(id) {
+  document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', ['inperson','mixed'][i] === id));
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+}
+
+function setStatus(msg, loading) {
+  const el = document.getElementById('status');
+  el.innerHTML = loading ? '<span class="spinner"></span>' + msg : msg;
+}
+
+async function api(payload) {
+  if (!SCRIPT_URL) { setStatus('No backend connected — see setup banner.'); return null; }
+  try {
+    const res = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
+    return await res.json();
+  } catch(e) {
+    setStatus('Connection error — check your Apps Script URL.');
+    return null;
+  }
+}
+
+async function loadAll() {
+  setStatus('Loading...', true);
+  const data = await api({ action: 'read' });
+  if (!data) return;
+  cache = data;
+  renderAll();
+  setStatus('Updated ' + new Date().toLocaleTimeString());
+}
+
+function renderAll() {
+  renderSlots('ip-tue-slots', cache.inperson.tue, 'inperson', 'tue');
+  renderSlots('ip-thu-slots', cache.inperson.thu, 'inperson', 'thu');
+  renderSlots('mx-tue-slots', cache.mixed.tue,    'mixed',    'tue');
+  renderSlots('mx-pad-slots', cache.mixed.pad,    'mixed',    'pad');
+  updateCounts();
+}
+
+function renderSlots(containerId, arr, section, day) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  arr.forEach((name, i) => {
+    const taken = name !== '';
+    const div = document.createElement('div');
+    div.className = 'slot' + (taken ? ' taken' : '');
+    div.id = 'slot-' + section + '-' + day + '-' + i;
+    div.innerHTML =
+      '<span class="slot-num">' + (i + 1) + '</span>' +
+      '<span class="slot-name' + (taken ? '' : ' empty') + '">' + (taken ? name : 'open') + '</span>' +
+      '<input class="slot-edit" type="text" placeholder="Your name" />' +
+      '<button class="badge ' + (taken ? 'badge-taken' : 'badge-open') + '" ' +
+        'onclick="handleBadge(this,\'' + section + '\',\'' + day + '\',' + i + ')">' +
+        (taken ? 'taken' : 'sign up') + '</button>';
+    container.appendChild(div);
+  });
+}
+
+function handleBadge(btn, section, day, i) {
+  const slot = document.getElementById('slot-' + section + '-' + day + '-' + i);
+  const nameEl = slot.querySelector('.slot-name');
+  const editEl = slot.querySelector('.slot-edit');
+  const currentName = cache[section][day][i];
+
+  if (btn.classList.contains('badge-open') || btn.classList.contains('badge-taken')) {
+    nameEl.style.display = 'none';
+    editEl.value = currentName;
+    editEl.style.display = 'block';
+    editEl.focus();
+    btn.textContent = 'save';
+    btn.className = 'badge badge-save';
+    editEl.onkeydown = function(e) { if (e.key === 'Enter') handleBadge(btn, section, day, i); if (e.key === 'Escape') cancelEdit(slot, nameEl, editEl, btn, currentName); };
+  } else if (btn.classList.contains('badge-save')) {
+    const newName = editEl.value.trim();
+    if (!newName) { cancelEdit(slot, nameEl, editEl, btn, currentName); return; }
+    saveSlot(section, day, i, newName, slot, nameEl, editEl, btn);
+  }
+}
+
+function cancelEdit(slot, nameEl, editEl, btn, currentName) {
+  editEl.style.display = 'none';
+  nameEl.style.display = 'block';
+  btn.textContent = currentName ? 'taken' : 'sign up';
+  btn.className = 'badge ' + (currentName ? 'badge-taken' : 'badge-open');
+}
+
+async function saveSlot(section, day, i, name, slot, nameEl, editEl, btn) {
+  slot.classList.add('saving');
+  btn.textContent = '...';
+  setStatus('Saving...', true);
+  const result = await api({ action: 'write', section, day, slot: i, name });
+  slot.classList.remove('saving');
+  if (!result || !result.ok) { setStatus('Save failed — try again.'); cancelEdit(slot, nameEl, editEl, btn, cache[section][day][i]); return; }
+  cache[section][day][i] = name;
+  editEl.style.display = 'none';
+  nameEl.textContent = name;
+  nameEl.classList.remove('empty');
+  nameEl.style.display = 'block';
+  btn.textContent = 'taken';
+  btn.className = 'badge badge-taken';
+  slot.classList.add('taken');
+  updateCounts();
+  setStatus('Saved at ' + new Date().toLocaleTimeString());
+}
+
+async function clearSection(section) {
+  if (!confirm('Clear all names in this section?')) return;
+  setStatus('Clearing...', true);
+  const result = await api({ action: 'clear', section });
+  if (!result || !result.ok) { setStatus('Error — try again.'); return; }
+  if (section === 'inperson') { cache.inperson.tue.fill(''); cache.inperson.thu.fill(''); }
+  else { cache.mixed.tue.fill(''); cache.mixed.pad.fill(''); }
+  renderAll();
+  setStatus('Cleared.');
+}
+
+function updateCounts() {
+  const ipTue = cache.inperson.tue.filter(Boolean).length;
+  const ipThu = cache.inperson.thu.filter(Boolean).length;
+  document.getElementById('ip-tue-count').textContent = ipTue;
+  document.getElementById('ip-thu-count').textContent = ipThu;
+  document.getElementById('ip-open-count').textContent = 24 - ipTue - ipThu;
+  const mxTue = cache.mixed.tue.filter(Boolean).length;
+  const mxPad = cache.mixed.pad.filter(Boolean).length;
+  document.getElementById('mx-tue-count').textContent = mxTue;
+  document.getElementById('mx-pad-count').textContent = mxPad;
+  document.getElementById('mx-open-count').textContent = 24 - mxTue - mxPad;
+}
+
+if (SCRIPT_URL) { loadAll(); setInterval(loadAll, 30000); }
+</script>
+</body>
+</html>
